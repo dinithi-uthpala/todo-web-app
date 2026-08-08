@@ -170,5 +170,5 @@ The frontend communicates with the backend through JSON API calls using a Bearer
 ### Clone repository
 
 ```bash
-git clone <repo-url>
+git clone <https://github.com/dinithi-uthpala/todo-web-app.git>
 cd todo-web-app
