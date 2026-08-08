@@ -1,71 +1,174 @@
-# Todo Web App
+# Todo Web Application
 
-A full-stack Todo application with a Laravel backend API and a Next.js + Tailwind CSS frontend.
-
-## Overview
-
-This repository contains two separate applications:
-
-- `backend/` — Laravel application providing authentication and Todo API endpoints
-- `frontend/` — Next.js application providing the user interface, authentication flow, and Todo dashboard
-
-The frontend communicates with the backend API via `NEXT_PUBLIC_API_URL`.
+A full-stack Todo application with a Laravel backend API and a Next.js frontend. The app supports user registration, login, authenticated Todo management, and task filtering.
 
 ---
 
-## Repo Structure
+## Project Overview
 
-- `backend/`
-  - `app/` — Laravel application code
-  - `config/` — Laravel config files
-  - `database/` — migrations, seeders, factories
-  - `public/` — public entrypoint
-  - `resources/` — frontend views/assets for Laravel
-  - `routes/` — application routes
-  - `vendor/` — Composer dependencies
-- `frontend/`
-  - `src/` — Next.js app source
-  - `public/` — static assets and illustrations
-  - `package.json` — frontend dependencies and scripts
-  - `tsconfig.json` — TypeScript settings
-  - `globals.css` — shared Tailwind styles
+This repository contains two separate applications:
+
+- `backend/` — Laravel API server using Sanctum for authentication
+- `frontend/` — Next.js user interface with TypeScript and Tailwind CSS
+
+The frontend communicates with the backend through JSON API calls using a Bearer token stored in `localStorage`.
 
 ---
 
 ## Features
 
-- User registration and login
-- Authenticated Todo dashboard
-- Create, update, delete tasks
-- Task completion toggle
-- Search and filter Todos
+- User registration
+- User login
+- Authentication with Sanctum token
+- Create Todo
+- View Todos
+- Edit Todo
+- Delete Todo
+- Mark Todo as completed
+- Mark Todo as pending
+- Search Todos by title or description
+- Filter Todos by status
+- Dashboard statistics for total/completed/pending tasks
 - Responsive UI with Tailwind CSS
-- Local illustrations and modern theme
 
 ---
 
-## Frontend
+## Technology Stack
 
-### Technologies
+- **Frontend**
+  - Next.js `16.3.0`
+  - React `19.2.8`
+  - TypeScript
+  - Tailwind CSS `4`
+- **Backend**
+  - Laravel `13.x`
+  - PHP `^8.3`
+  - Laravel Sanctum
+- **Database**
+  - Laravel `.env.example` defaults to `sqlite`
+- **Authentication**
+  - API token authentication via Laravel Sanctum
+  - Frontend stores token in `localStorage`
+- **Styling / UI**
+  - Tailwind CSS
+  - Custom component styles in `frontend/src/app/globals.css`
+- **Development tools**
+  - `npm`
+  - `composer`
+  - `artisan`
+  - `vite`
 
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS 4
+---
 
-### Important files
+## Project Structure
 
-- `frontend/src/app/page.tsx` — homepage
-- `frontend/src/app/login/page.tsx` — login page
-- `frontend/src/app/register/page.tsx` — registration page
-- `frontend/src/app/dashboard/page.tsx` — dashboard page
-- `frontend/src/app/globals.css` — shared theme styling
-- `frontend/src/lib/api.ts` — API URL helper
-- `frontend/src/lib/auth.ts` — token storage helpers
+### Root
 
-### Setup
+- `backend/`
+- `frontend/`
 
-1. Open `frontend/`
-2. Install dependencies:
-   ```bash
-   npm install
+### Backend
+
+- `backend/app/Http/Controllers/Api/`
+  - `AuthController.php`
+  - `TodoController.php`
+- `backend/app/Models/`
+  - `User.php`
+  - `Todo.php`
+- `backend/routes/api.php`
+- `backend/database/migrations/`
+  - `2026_08_08_130000_create_todos_table.php`
+  - user, cache, jobs migrations
+- `backend/database/factories/`
+  - `TodoFactory.php`
+- `backend/tests/Feature/`
+  - `AuthApiTest.php`
+  - `TodoApiTest.php`
+
+### Frontend
+
+- `frontend/src/app/`
+  - `page.tsx`
+  - `login/page.tsx`
+  - `register/page.tsx`
+  - `dashboard/page.tsx`
+  - `globals.css`
+- `frontend/src/lib/`
+  - `api.ts`
+  - `auth.ts`
+- `frontend/src/types/`
+  - `todo.ts`
+- `frontend/package.json`
+- `frontend/tsconfig.json`
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Purpose | Auth required |
+| --- | --- | --- | --- |
+| POST | `/api/register` | Register new user | No |
+| POST | `/api/login` | Login and receive token | No |
+| POST | `/api/logout` | Revoke current token | Yes |
+| GET | `/api/user` | Fetch authenticated user | Yes |
+| GET | `/api/todos` | List user's Todos | Yes |
+| POST | `/api/todos` | Create new Todo | Yes |
+| GET | `/api/todos/{todo}` | Get a single Todo | Yes |
+| PUT | `/api/todos/{todo}` | Update a Todo | Yes |
+| DELETE | `/api/todos/{todo}` | Delete a Todo | Yes |
+| PATCH | `/api/todos/{todo}/complete` | Mark Todo completed | Yes |
+| PATCH | `/api/todos/{todo}/pending` | Mark Todo pending | Yes |
+
+### Notes
+- `GET /api/todos` accepts query parameters:
+  - `search` — text search on title or description
+  - `status` — `completed` or `pending`
+
+---
+
+## Authentication
+
+- Backend uses Laravel Sanctum.
+- Registration and login return a plain text token.
+- Frontend stores the token under `todo_app_auth_token` in `localStorage`.
+- Dashboard requests include `Authorization: Bearer <token>`.
+- Protected API routes are grouped under `auth:sanctum`.
+
+---
+
+## Database
+
+### Key tables
+
+- `users`
+  - `id`, `name`, `email`, `password`, `remember_token`, timestamps
+- `todos`
+  - `id`
+  - `user_id` (foreign key, cascade delete)
+  - `title`
+  - `description`
+  - `completed`
+  - timestamps
+
+### Relationships
+
+- `User` has many `Todo`
+- `Todo` belongs to `User`
+
+---
+
+## Installation and Setup
+
+### Prerequisites
+
+- PHP `^8.3`
+- Composer
+- Node.js / npm
+- SQLite, MySQL, or another supported database
+- Git
+
+### Clone repository
+
+```bash
+git clone <repo-url>
+cd todo-web-app
